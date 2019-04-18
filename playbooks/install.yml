@@ -6,7 +6,6 @@
   roles:
     - docker-install
     - consul-install
-    - firewall
 
 - name: Prepare and run consul server and clients
   hosts: consul_server

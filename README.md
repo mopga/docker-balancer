@@ -14,7 +14,7 @@ It has such components:
 
 How it works in simple steps:
 
-0. In you Dockerfile you must use label "SERVICE_NAME=your_serice_name"
+0. In you Dockerfile you must use label "SERVICE_NAME=your_serice_name" and "SERVICE_TAGS=your_tag(may be service name)"
 1. Registartor is listen to docker socket on the current node
 2. When the new service is running registartor send the host ip and port to consul
 3. Consul-template listen to new events in consul-server and see the new instance of a service
@@ -45,7 +45,7 @@ ssh-copy-id %ip_host%
 
 ### Tested with ubuntu server 14.04 TLS.
 
-0.clone the repo:
+0. clone the repo
 1. edit inventory/static to add hosts for install. edit variables in playbooks/group_vars/all if you need custom settings (such as proxy)
 2. run ./install.sh to install and run all.
 
