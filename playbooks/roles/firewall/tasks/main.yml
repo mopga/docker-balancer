@@ -1,0 +1,42 @@
+---
+- name: include variables
+  include_vars: ../vars/vars.yml
+
+- name: Try to disable firewall if it is enabled
+  ufw:
+    state: disabled
+
+- name: add ssh rule to firewall
+  ufw:
+    rule: allow
+    port: 22
+
+- name: Add rule to allow all from server nodes
+  ufw:
+    rule: allow
+    src: "{{ item }}"
+  with_items:
+    - "{{ groups['consul_server'] | map('extract',hostvars,'ansible_host') | list }}"
+
+#- name: Add rule to allow all from client nodes
+#  ufw:
+#    rule: allow
+#    src: "{{ item }}"
+#  with_items:
+#    - "{{ groups['consul_agents'] | map('extract',hostvars,'ansible_host') | list }}"
+
+- name: Add rule to open ports
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+  with_items: "{{ opened_ports|default([]) }}"
+
+- name: Open all port to our networks
+  ufw:
+    rule: allow
+    src: "{{ item }}"
+  with_items: "{{ open_networks|default([]) }}"
+
+- name: Enable Firewall
+  ufw:
+    state: enabled

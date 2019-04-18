@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  proxy:
+   image: {{ image_name }}
+   restart: always
+   network_mode: host
+   container_name: {{ service_name }}
+   command: "-config=/etc/haproxy/haproxy.json -consul-addr={{ ansible_host }}:8500"
+   volumes:
+     - /app/{{ service_name }}/config/:/etc/haproxy/

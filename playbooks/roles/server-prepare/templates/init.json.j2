@@ -1,0 +1,12 @@
+{
+    "server": true,
+    "ui": true,
+    "advertise_addr": "{{ ansible_host }}",
+    "client_addr": "{{ ansible_host }}",
+    "data_dir": "/tmp/consul",
+    "bootstrap_expect": 2,
+    "start_join": ["{{ consul_server_ip }}", "{{ consul_server_ip2 }}"],
+    "ports": {
+    "dns": 53
+    }
+}

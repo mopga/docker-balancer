@@ -1,0 +1,42 @@
+---
+- name: include variables
+  include_vars: ../vars/vars.yml
+
+- name: Create directories for container
+  file:
+    path: /app/{{ service_name }}/{{ item }}
+    state: directory
+  with_items:
+    - config
+
+- name: Copy dockerfile to /app/{{ service_name }}
+  copy:
+    src: ../templates/{{ item }}
+    dest: /app/{{ service_name }}
+  with_items:
+    - Dockerfile
+
+- name: Copy haproxy configs to /app/{{ service_name }}/config
+  copy:
+    src: ../templates/{{ item }}
+    dest: /app/{{ service_name }}/config
+  with_items:
+    - haproxy.ctmpl
+    - haproxy.json
+
+- name: Build docker image form dockerfile
+  shell: docker build -t {{ image_name }} .
+  args:
+    executable: /bin/bash
+    chdir: /app/{{ service_name }}
+
+- name: Generate docker-compose based on builded image
+  template:
+    src: ../templates/docker-compose.j2
+    dest: /app/{{ service_name }}/docker-compose.yml
+
+- name: Up and run container with HAproxy
+  shell: docker-compose up -d
+  args:
+    chdir: /app/{{ service_name }}
+    executable: /bin/bash

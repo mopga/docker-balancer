@@ -1,0 +1,8 @@
+---
+req_pack:
+  - "python-apt"
+  - "apt-transport-https"
+  - "ca-certificates"
+  - "curl"
+  - "software-properties-common"
+  - "unzip"

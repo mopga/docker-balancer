@@ -1,0 +1,73 @@
+---
+- name: include variables
+  include_vars: ../vars/vars.yml
+
+- name: Install required packcges
+  apt: 
+    name: "{{ item }}"
+    update_cache: yes
+  with_items: "{{ req_pack  }}"
+
+- name:    Add Docker GPG key throw proxy
+  apt_key:
+    id: "{{ docker_apt_key }}"
+    keyserver: "{{ ansible_local.core.keyserver
+                if (ansible_local|d() and ansible_local.core|d() and
+                    ansible_local.core.keyserver)
+                else 'hkp://keyserver.ubuntu.com' }}"
+    state: "present"
+  environment:
+    http_proxy: "{{ our_proxy  }}"
+  when: use_proxy
+
+- name:    Add Docker GPG key without proxy
+  apt_key:
+    id: "{{ docker_apt_key }}"
+    keyserver: "{{ ansible_local.core.keyserver
+                if (ansible_local|d() and ansible_local.core|d() and
+                    ansible_local.core.keyserver)
+                else 'hkp://pool.sks-keyservers.net' }}"
+    state: "present"
+  when: not use_proxy
+
+- name: Add Docker APT repository
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ansible_distribution_release}} stable
+
+- name: Install Docker
+  apt:
+    name: docker-ce
+
+- name: Install Docker Compose throw porxy
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
+    dest: "/usr/local/bin/docker-compose"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  environment:
+    https_proxy: "{{ our_proxy  }}"
+  when: use_proxy
+
+- name: Install Docker Compose
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
+    dest: "/usr/local/bin/docker-compose"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  when: not use_proxy
+
+- name: Create porxy for docker if proxy is defined
+  blockinfile:
+    dest: /etc/default/docker
+    block: |
+      export http_proxy={{ our_proxy }}
+      export https_proxy={{ our_proxy }}
+  when: use_proxy
+
+- name: Restart docker service for changes
+  service:
+    name: docker
+    state: restarted
+  when: use_proxy

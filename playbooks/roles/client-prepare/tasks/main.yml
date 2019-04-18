@@ -1,0 +1,23 @@
+---
+- name: include variables
+  include_vars: ../vars/vars.yml
+
+- name: Ensure config directory exists
+  file:
+    path: "{{ consul_config_dir }}"
+    state: directory
+
+- name: Copy consul client config to dir
+  template:
+    src: ../templates/init_client.json.j2
+    dest: "{{ consul_config_dir }}/init_client.json"
+
+- name: Make consul system service
+  copy:
+    src: ../templates/consul-client.conf
+    dest: /etc/init/consul-client.conf
+
+- name: Run consul service
+  service: 
+    name: consul-client
+    state: started

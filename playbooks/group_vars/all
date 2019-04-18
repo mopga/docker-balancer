@@ -1,0 +1,5 @@
+---
+use_proxy: false                               #define usage of proxy must be true or false
+our_proxy: http://10.216.56.244:3129/          #proxy server address must be set if use_proxy set to true
+domain_name: m01.regr.haze.renault.ru          #our domain name
+consul_version: 1.2.1                          #consul version

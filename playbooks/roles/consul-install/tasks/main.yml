@@ -1,0 +1,18 @@
+---
+- name: include variables
+  include_vars: ../vars/vars.yml
+
+- name: Install required packcges
+  apt: 
+    name: "{{ item }}"
+    update_cache: yes
+  with_items: "{{ req_pack  }}"
+
+- name: Install Consul
+  unarchive:
+    src: https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip
+    remote_src: yes
+    dest: /usr/local/bin
+    creates: /usr/local/bin/consul
+    mode: 0555
+

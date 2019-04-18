@@ -1,0 +1,5 @@
+---
+service_name: consul-template
+image_name: reverse_proxy
+consul_server_ip: "{{ hostvars[groups['consul_server'][0]]['ansible_eth0']['ipv4']['address'] }}"
+#consul_server_ip: "{{ ansible_host }}"

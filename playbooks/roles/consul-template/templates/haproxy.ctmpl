@@ -1,0 +1,35 @@
+defaults
+    log 127.0.0.1   local0
+    log 127.0.0.1   local1 notice
+    log-format "%{+Q}o\ %t, client_address = %ci, client_port = %cp, server_address = %si, server_port = %sp, status = %ST"
+    mode http
+    timeout client  50000
+    timeout connect 5000ms
+    timeout server  5000ms
+
+frontend stats-front
+    bind *:9999
+    mode http
+    default_backend stats-back
+
+backend stats-back
+    mode http
+    stats uri /
+    stats auth admin:Pa$$_w0r1d777!
+
+{{range $a:=services}}{{range $t := .Tags}}{{if (ne $t "udp")}}
+
+frontend {{$a.Name}}_front
+   bind *:8888
+   option http-server-close
+   option forwardfor header X-Real-IP
+   use_backend {{$a.Name}}_back{{end}}{{end}}{{end}}
+
+{{range $a:=services}}{{range $tag := .Tags}}{{if (ne $tag "udp")}}
+backend {{$a.Name}}_back
+ mode http
+ balance roundrobin
+ option forwardfor
+ {{range $b := service $a.Name}}
+ server {{$tag}} {{$b.Address}}:{{$b.Port}} check {{end}}{{end}}{{end}}
+{{end}}

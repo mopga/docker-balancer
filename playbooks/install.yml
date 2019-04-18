@@ -1,0 +1,24 @@
+---
+- name: Prepare all hosts and install all software
+  hosts: all
+  become: yes
+  gather_facts: true
+  roles:
+    - docker-install
+    - consul-install
+    - firewall
+
+- name: Prepare and run consul server and clients
+  hosts: consul_server
+  become: yes
+  gather_facts: true
+  roles:
+    - server-prepare
+
+- name: Prepare and run Registartor, consul template and HAproxy
+  hosts: consul_server
+  become: yes
+  gather_facts: true
+  roles:
+    - registrator
+    - consul-template

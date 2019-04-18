@@ -1,0 +1,19 @@
+---
+- name: include variables
+  include_vars: ../vars/vars.yml
+
+- name: Make dir for running Registrator
+  file:
+    path: /app/{{ service_name }}
+    state: directory
+
+- name: Copy registrator template to dir
+  template:
+    src: ../templates/docker-compose.j2
+    dest: "/app/{{ service_name }}/docker-compose.yml"
+
+- name: Run Registrator in docker container
+  shell: docker-compose up -d
+  args:
+    chdir: /app/{{ service_name }}
+    executable: /bin/bash

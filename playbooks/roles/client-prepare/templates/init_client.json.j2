@@ -1,0 +1,8 @@
+{
+    "server": false,
+    "data_dir": "/tmp/consul",
+    "ports": {
+    "dns": 53
+    }
+    "start_join": ["{{ consul_server_ip }}", "{{ consul_server_ip2 }}"],
+}
