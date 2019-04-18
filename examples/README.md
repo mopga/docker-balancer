@@ -8,7 +8,7 @@ docker build -t exapmle_http .
 ```
 2. run the builded image on random port:
 ```
-docker run -P d exapmle_http
+docker run -P -d exapmle_http
 ```
 
 3. repeat step 2 as many times as you need.
